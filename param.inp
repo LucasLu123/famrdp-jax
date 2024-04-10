@@ -1,0 +1,131 @@
+ &general   
+ casname = "g01",        
+ indir   = " ",        
+ outdir  = " ",         
+ /
+ &inflow
+ moo     = 0.00001,
+ reno    = 200.0,
+ alt     = -50.0,
+ attack  = 0.0,
+ ayaw    = 0.0,
+ rinf    = -1.225,
+ vinf    = -60.0,
+ pinf    = 84996.6532561304,
+ tinf    = 283.00,
+ /
+ &reference
+ reflen  = 1.0,
+ reflgrd = 1.0,
+ freflen = 1.0,
+ frefsc  = 1.0,
+ frefxc  = 0.0,
+ frefyc  = 0.0,
+ frefzc  = 0.0,
+ /
+ &filename
+ topfile = "test3.inp", 
+ topsty  = 0, 
+ grdfile = "test3.grd",
+ grdsty  = 0,
+ resfile = "res.plt",
+ fcefile = "force.plt",
+ solfile = "flowfield.sol",
+ pltfile = "tecflow.plt",
+ pltsty  = 0, 
+ /
+ &initconst
+ nincst  = 0,
+ mincst  = 0.01,
+ alpcst  = 0.0,
+ betcst  = 0.0,
+ pincst  = 84.9966532561304,
+ tincst  = 283.00,
+ /
+ &control
+ nrestrt = 1,
+ nstepmx = 100000000,
+ nressav = 1,
+ nfcesav = 10,
+ nsolsav = 1000000000,
+ npltsav = 100,
+ /
+ &physical
+ ndim    = 2,
+ nvis    = 1,
+ twall   = -210.02,
+ /
+ &turbulent
+ nturlhs = 2,
+ ntursub = 5,
+ ntursch = 1,
+ nturint = 1, 
+ nrddst  = 1,
+ ntke2s  = 0,
+ nearsm  = 0,
+ kfstur  = 0.001,
+ kmaxtur = 150.0,
+ vfstur  = 0.001,
+ vmaxtur = 1.0E6
+ /
+ &timestep
+ nprec   = 0,
+ nscmp   = 1,
+ nlhs    = 13,
+ nsubmax = 60,
+ tolsub  = 0.01,
+ nunst   = 0,
+ cflst   = 100.0,
+ cfled   = 100.0,
+ cflfac  = 0.001,
+ cdtmax  = -10.0,
+ relaxs  = 0.1,
+ relaxp  = 0.5,
+ dtau    = 0.1,
+ dtime   = 0.1,
+ /
+ &method
+ nscheme = 7,
+ nflux   = 7,
+ nintnon = 23,
+ nlimit  = 0,
+ enfix   = 0.0,
+ ckmuscl = -1.0,
+ cbmuscl = 1.0,
+ csrvis  = 1.0,
+ csafeup = -0.5,
+ rlimit  = 1.0e-6,1.0e+3,
+ plimit  = 1.0e-6,1.0e+10,
+ tlimit  = 1.0e-6,1.0e+3,
+ /
+ &technic
+ ncutpol = 3,
+ ncelcet = 1,
+ nghnode = 6,
+ nghedge = 2,
+ nsponge = -1,
+ sigspg  = 100.0,
+ nrddsp  = 0,
+ nacous  = -1,
+ nprms   = -1,
+ ns_mean = 1,
+ ns_prms = 2000,
+ /
+ &gasmodel
+ wgas    = 28.97,
+ gamma   = 1.4,
+ mu0sth  = 1.71608e-5,
+ t0sth   = 273.15,
+ tssth   = 110.4,
+ prlam   = 0.72,
+ prtur   = 0.90,
+ sclam   = 0.50,
+ sctur   = 0.50,
+ /
+ &monitor
+ nmoni   = -3,
+ nbmoni  = 1,1,2
+ nimoni  = 25,0,0
+ njmoni  = 0,15,0
+ nkmoni  = 0,0,4
+ /
