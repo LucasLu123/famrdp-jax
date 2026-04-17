@@ -3317,23 +3317,26 @@ subroutine grid_derivative_scheme_cc(sub_ve3,sub_dn3,sub_ve2)
 end subroutine grid_derivative_scheme_cc
 
 subroutine calc_grid_derivative(nghn,nghe,sub_ve3,sub_dn3,sub_ve2,sub_dn2)
+#include "validation/fortran_probes/probes.h"
     use mod_kndconsts, only : kind_int
     use mod_constants, only : nfsf_grd_d3int,nfsf_grd_d3der
     use mod_constants, only : nfsf_grd_d2int,nfsf_grd_d2der
     use mod_constants, only : nbc_inter_buf_dyn,nsgl_aver_art
     use mod_datatypes, only : var_block_t
-    use mod_fieldvars, only : mb_xyz,mb_sxyz,mb_vol
+    use mod_fieldvars, only : mb_xyz,mb_sxyz,mb_vol,nblocks
     use mod_interface, only : pre_exchange_bc_var,post_exchange_bc_var,exchange_bc_der
     use mod_interface, only : mb_var_create,mb_var_delete
     use mod_interface, only : calc_mb_dn_via_node3,calc_mb_dn_via_node2
     use mod_interface, only : calc_mb_sxyz_vol,exchange_bc_sxyz
     use mod_interface, only : calc_mb_dn_via_vec_node2,calc_mb_vol
     use mod_interface, only : ghost_bc_var_all,gather_output_mb_var
+    use probe_utils, only : probe_write_jac
     implicit none
     integer(kind_int), intent(in) :: nghn,nghe
     external                      :: sub_ve3,sub_dn3
     external                      :: sub_ve2,sub_dn2
     type(var_block_t), pointer    :: mb_der3(:),mb_der2(:),mb_der1(:)
+    integer(kind_int)             :: nb
 
     !
     ! +----*----+----*----+----*- ... ... -*----+----*----+----*----+
@@ -3451,16 +3454,10 @@ subroutine calc_grid_derivative(nghn,nghe,sub_ve3,sub_dn3,sub_ve2,sub_dn2)
     call ghost_bc_var_all(mb_sxyz,1,9)
     call ghost_bc_var_all(mb_vol,1,1)
 
-    ! --- PROBE_DUMP_METRIC (M1.1 validation hook) ---
-    ! After this point mb_vol(nb)%fld(1)%r3d holds the Jacobian/cell-volume
-    ! and mb_sxyz(nb)%fld(1:9)%r3d holds the 9 metric derivatives (kxyz).
-    ! To generate reference data for test_m11_metric_match.py, add here:
-    !   call PROBE_DUMP_METRIC(mb_vol, mb_sxyz, nblocks, nghn)
-    ! where PROBE_DUMP_METRIC writes per-block binary files:
-    !   validation/references/test3/metric/block_NNNN_jac.bin   (mb_vol)
-    !   validation/references/test3/metric/block_NNNN_kxyz.bin  (mb_sxyz, 9 components)
-    ! Variable layout: mb_vol => jac=det(J); mb_sxyz(1..9) => kxyz[l,m] row-major
-    ! -------------------------------------------------
+    ! Probe: dump jac for JAX validation (enabled by -DPROBE_METRIC)
+    do nb = 1, nblocks
+        PROBE_DUMP_JAC(nb, mb_vol(nb)%fld(1)%r3d)
+    end do
 
 end subroutine calc_grid_derivative
 

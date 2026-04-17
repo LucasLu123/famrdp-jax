@@ -21,9 +21,9 @@ def read_grd(path) -> list[np.ndarray]:
         blocks = []
         for (ni, nj, nk) in shapes:
             ncell = ni * nj * nk
-            xs = np.fromfile(f, dtype="<f8", count=ncell).reshape((ni, nj, nk))
-            ys = np.fromfile(f, dtype="<f8", count=ncell).reshape((ni, nj, nk))
-            zs = np.fromfile(f, dtype="<f8", count=ncell).reshape((ni, nj, nk))
+            xs = np.fromfile(f, dtype="<f8", count=ncell).reshape((ni, nj, nk), order="F")
+            ys = np.fromfile(f, dtype="<f8", count=ncell).reshape((ni, nj, nk), order="F")
+            zs = np.fromfile(f, dtype="<f8", count=ncell).reshape((ni, nj, nk), order="F")
             xyz = np.stack([xs, ys, zs], axis=0)
             blocks.append(xyz.astype(np.float64))
     return blocks

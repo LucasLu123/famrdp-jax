@@ -1,12 +1,14 @@
-// validation/fortran_probes/probes.h
+/* validation/fortran_probes/probes.h */
 #ifndef PROBES_H
 #define PROBES_H
 
 #ifdef PROBE_METRIC
 #define PROBE_DUMP_METRIC(nb, jac, kxyz, vol) \
     call probe_write_metric(nb, jac, kxyz, vol)
+#define PROBE_DUMP_JAC(nb, jac) call probe_write_jac(nb, jac)
 #else
 #define PROBE_DUMP_METRIC(nb, jac, kxyz, vol)
+#define PROBE_DUMP_JAC(nb, jac)
 #endif
 
 #ifdef PROBE_RHS

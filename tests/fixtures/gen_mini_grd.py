@@ -16,7 +16,7 @@ def main():
             zs = np.linspace(0.0, 1.0, nk)
             X, Y, Z = np.meshgrid(xs, ys, zs, indexing="ij")
             for arr in (X, Y, Z):
-                arr.astype("<f8").tofile(f)
+                arr.astype("<f8").flatten(order="F").tofile(f)
 
 if __name__ == "__main__":
     main()
