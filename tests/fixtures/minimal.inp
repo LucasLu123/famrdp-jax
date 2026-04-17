@@ -1,0 +1,32 @@
+&general
+ casname = "test",
+/
+&inflow
+ moo = 0.3,
+ reno = 1000.0,
+ attack = 0.0,
+ ayaw = 0.0,
+ rinf = 1.225,
+ vinf = 100.0,
+ pinf = 101325.0,
+ tinf = 288.15,
+/
+&gasmodel
+ wgas = 28.97,
+ gamma = 1.4,
+ mu0sth = 1.71608e-5,
+ t0sth = 273.15,
+ tssth = 110.4,
+ prlam = 0.72,
+ prtur = 0.90,
+/
+&method
+ nflux = 4,
+ nintnon = 1,
+ nlimit = 1,
+/
+&timestep
+ nlhs = 1,
+ cflst = 1.0,
+ cfled = 1.0,
+/
