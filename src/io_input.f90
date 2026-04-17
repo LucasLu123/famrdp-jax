@@ -69,13 +69,16 @@ subroutine input_top_cc
 end subroutine input_top_cc
 
 subroutine input_grd
+#include "validation/fortran_probes/probes.h"
     use mod_kndconsts, only : kind_int
     use mod_constants, only : io_unit_grd
     use mod_variables, only : ncutpol,ncelcet
     use mod_variables, only : grdfile,nghnode
     use mod_fieldvars, only : nblocks,mb_xyz
     use mod_interface, only : mb_var_create
+    use probe_utils, only : probe_write_xyz
     implicit none
+    integer :: nb
 
     if(ncutpol == 5) then
         call mb_var_create(mb_xyz,1,3,nghnode*3)
@@ -86,6 +89,11 @@ subroutine input_grd
     call openfile(io_unit_grd,grdfile,"old","unformatted","stream")
     call input_grd_plot3d(io_unit_grd)
     call closefile(io_unit_grd,grdfile)
+
+    ! Probe: dump xyz coordinates for validation (enabled by -DPROBE_XYZ)
+    do nb = 1, nblocks
+        PROBE_DUMP_XYZ(nb, mb_xyz(nb)%fld(1)%r3d, mb_xyz(nb)%fld(2)%r3d, mb_xyz(nb)%fld(3)%r3d)
+    end do
 
 end subroutine input_grd
 
@@ -368,11 +376,11 @@ subroutine input_top_gridgen(io_unit)
                 reg%bctype    = bc_cut1to1
                 reg%subtype   = subc_cut_original
                 reg%subtype_A = 1
-            case(bc_cut1to1_split)   !! 剖分出来的对接面
+            case(bc_cut1to1_split)   !! 锟绞分筹拷锟斤拷锟侥对斤拷锟斤拷
                 reg%bctype    = bc_cut1to1
                 reg%subtype   = subc_cut_spliting
                 reg%subtype_A = 0
-            case(bc_cut1to1_splitA)  !! 剖分出来的对接面
+            case(bc_cut1to1_splitA)  !! 锟绞分筹拷锟斤拷锟侥对斤拷锟斤拷
                 reg%bctype    = bc_cut1to1
                 reg%subtype   = subc_cut_patched
                 reg%subtype_A = 1
@@ -468,11 +476,11 @@ subroutine input_top_gridgen_cc(io_unit)
                 reg%bctype    = bc_cut1to1
                 reg%subtype   = subc_cut_original
                 reg%subtype_A = 1
-            case(bc_cut1to1_split)   !! 剖分出来的对接面
+            case(bc_cut1to1_split)   !! 锟绞分筹拷锟斤拷锟侥对斤拷锟斤拷
                 reg%bctype    = bc_cut1to1
                 reg%subtype   = subc_cut_spliting
                 reg%subtype_A = 0
-            case(bc_cut1to1_splitA)  !! 剖分出来的对接面
+            case(bc_cut1to1_splitA)  !! 锟绞分筹拷锟斤拷锟侥对斤拷锟斤拷
                 reg%bctype    = bc_cut1to1
                 reg%subtype   = subc_cut_patched
                 reg%subtype_A = 1
@@ -549,11 +557,11 @@ subroutine input_top_gridgen_cc(io_unit)
                 regc%bctype    = bc_cut1to1
                 regc%subtype   = subc_cut_original
                 regc%subtype_A = 1
-            case(bc_cut1to1_split)   !! 剖分出来的对接面
+            case(bc_cut1to1_split)   !! 锟绞分筹拷锟斤拷锟侥对斤拷锟斤拷
                 regc%bctype    = bc_cut1to1
                 regc%subtype   = subc_cut_spliting
                 regc%subtype_A = 0
-            case(bc_cut1to1_splitA)  !! 剖分出来的对接面
+            case(bc_cut1to1_splitA)  !! 锟绞分筹拷锟斤拷锟侥对斤拷锟斤拷
                 regc%bctype    = bc_cut1to1
                 regc%subtype   = subc_cut_patched
                 regc%subtype_A = 1
@@ -616,11 +624,11 @@ subroutine input_top_gridgen_cc(io_unit)
                 regsp%bctype    = bc_cut1to1
                 regsp%subtype   = subc_cut_original
                 regsp%subtype_A = 1
-            case(bc_cut1to1_split)   !! 剖分出来的对接面
+            case(bc_cut1to1_split)   !! 锟绞分筹拷锟斤拷锟侥对斤拷锟斤拷
                 regsp%bctype    = bc_cut1to1
                 regsp%subtype   = subc_cut_spliting
                 regsp%subtype_A = 0
-            case(bc_cut1to1_splitA)  !! 剖分出来的对接面
+            case(bc_cut1to1_splitA)  !! 锟绞分筹拷锟斤拷锟侥对斤拷锟斤拷
                 regsp%bctype    = bc_cut1to1
                 regsp%subtype   = subc_cut_patched
                 regsp%subtype_A = 1

@@ -21,4 +21,10 @@
 #define PROBE_DUMP_STEP(nstep)
 #endif
 
+#ifdef PROBE_XYZ
+#define PROBE_DUMP_XYZ(nb, x, y, z) call probe_write_xyz(nb, x, y, z)
+#else
+#define PROBE_DUMP_XYZ(nb, x, y, z)
+#endif
+
 #endif
