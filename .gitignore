@@ -1,0 +1,40 @@
+# 网格 / 算例数据(不入仓,运行时在本地提供)
+test3.grd
+test3.gg
+test3.grd.dst
+test3.inp
+test3.*
+
+# 运行配置样例(本地持有,不入仓)
+param.inp
+
+# Claude Code session 数据
+.claude/
+
+# Fortran build 产物
+build/
+build-*/
+*.mod
+*.o
+*.obj
+*.exe
+HOSTA.*
+
+# Probe 运行时输出
+probes/
+dumps/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+.uv/
+uv.lock
+
+# 验证 reference 以外的本地临时
+*.swp
+*~
+.DS_Store
