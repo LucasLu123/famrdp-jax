@@ -26,13 +26,13 @@ def test_block_rejects_float32():
 def test_state_tree_map_preserves_structure():
     ni, nj, nk = 4, 4, 4
     b = Block(
-        q=jnp.zeros((5, ni, nj, nk)),
-        xyz=jnp.zeros((3, ni, nj, nk)),
+        q=jnp.zeros((5, ni, nj, nk), dtype=jnp.float64),
+        xyz=jnp.zeros((3, ni, nj, nk), dtype=jnp.float64),
     )
     m = Metrics(
-        jac=jnp.ones((ni, nj, nk)),
-        kxyz=jnp.zeros((3, 3, ni, nj, nk)),
-        vol=jnp.ones((ni, nj, nk)),
+        jac=jnp.ones((ni, nj, nk), dtype=jnp.float64),
+        kxyz=jnp.zeros((3, 3, ni, nj, nk), dtype=jnp.float64),
+        vol=jnp.ones((ni, nj, nk), dtype=jnp.float64),
     )
     s = State(blocks=(b,), metrics=(m,), t=0.0, step=0)
     doubled = jax.tree_util.tree_map(lambda x: 2 * x, s)
