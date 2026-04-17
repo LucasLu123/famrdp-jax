@@ -67,4 +67,4 @@ def compute_metrics(xyz: jnp.ndarray, *, ghost: int) -> Metrics:
     kxyz_per = jnp.linalg.inv(J_per_cell)     # (ni, nj, nk, 3, 3)  [l, m]
     kxyz = jnp.transpose(kxyz_per, (3, 4, 0, 1, 2))  # (3, 3, ni, nj, nk)
 
-    return Metrics(jac=jac, kxyz=kxyz, vol=jac)
+    return Metrics(jac=jac, kxyz=kxyz, vol=jnp.abs(jac))

@@ -30,14 +30,14 @@ def roe_flux(UL, UR, nxyz, *, gamma, eps_entropy=0.1):
 
     # Roe 平均
     sqL = jnp.sqrt(rhoL); sqR = jnp.sqrt(rhoR)
-    ss = sqL + sqR
+    ss = jnp.maximum(sqL + sqR, 1e-150)
     u_h = (sqL*uL + sqR*uR)/ss
     v_h = (sqL*vL + sqR*vR)/ss
     w_h = (sqL*wL + sqR*wR)/ss
     H_h = (sqL*HL + sqR*HR)/ss
-    q2  = u_h**2 + v_h**2 + w_h**2
-    c2  = (gamma-1.0)*(H_h - 0.5*q2)
-    c_h = jnp.sqrt(jnp.maximum(c2, 1e-30))
+    q2    = u_h**2 + v_h**2 + w_h**2
+    c2_safe = jnp.maximum((gamma-1.0)*(H_h - 0.5*q2), 1e-30)
+    c_h   = jnp.sqrt(c2_safe)
     un_h = u_h*nxyz[0] + v_h*nxyz[1] + w_h*nxyz[2]
     rho_h = sqL * sqR
 
@@ -55,9 +55,9 @@ def roe_flux(UL, UR, nxyz, *, gamma, eps_entropy=0.1):
     dU = UR - UL
     dp = (gamma-1.0)*(dU[4] - u_h*dU[1] - v_h*dU[2] - w_h*dU[3] + 0.5*q2*dU[0])
     dun = (dU[1]*nxyz[0] + dU[2]*nxyz[1] + dU[3]*nxyz[2]) - un_h*dU[0]
-    a1 = (dp - rho_h*c_h*dun) / (2.0*c_h**2)
-    a5 = (dp + rho_h*c_h*dun) / (2.0*c_h**2)
-    a23 = dU[0] - dp/c_h**2  # 接触 + 剪切
+    a1 = (dp - rho_h*c_h*dun) / (2.0*c2_safe)
+    a5 = (dp + rho_h*c_h*dun) / (2.0*c2_safe)
+    a23 = dU[0] - dp/c2_safe  # 接触 + 剪切
 
     # 右特征向量
     R1 = jnp.stack([jnp.ones_like(u_h), u_h-c_h*nxyz[0], v_h-c_h*nxyz[1], w_h-c_h*nxyz[2], H_h-c_h*un_h])

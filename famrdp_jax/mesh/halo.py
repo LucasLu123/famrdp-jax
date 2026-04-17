@@ -83,6 +83,8 @@ def halo_exchange(
             if topo.bc_type.get(face) != BCType.CUT1TO1:
                 continue
             nb_id, src_face, _orient = info
+            if _orient != 0:
+                raise NotImplementedError(f"orient={_orient} not supported in stage 1")
             src_i = id_to_idx[nb_id]
             # Use original (pre-exchange) source arrays to avoid order-dependency
             qs[i] = _copy_face(qs[i], blocks[src_i].q, face, src_face, ghost)
