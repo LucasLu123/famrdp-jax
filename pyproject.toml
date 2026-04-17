@@ -1,0 +1,26 @@
+[project]
+name = "famrdp-jax"
+version = "0.1.0"
+description = "Differentiable JAX port of FAMRDP CFD solver (stage 1: MUSCL+Roe)"
+requires-python = ">=3.11"
+dependencies = [
+    "jax>=0.4.30",
+    "jaxlib>=0.4.30",
+    "flax>=0.9.0",
+    "chex>=0.1.85",
+    "numpy>=1.26",
+    "scipy>=1.13",
+    "f90nml>=1.4.4",
+]
+
+[project.optional-dependencies]
+gpu = ["jax[cuda12]>=0.4.30"]
+dev = ["pytest>=8", "pytest-xdist", "hypothesis>=6.100", "uv"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["famrdp_jax*"]
