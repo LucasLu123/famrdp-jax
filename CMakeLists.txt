@@ -100,4 +100,17 @@ SET(SET_OPT_FLAGS4 "-DAFLUX_VIS_OPT")
 
 SET(target_name ${EXEPRE}.${EXESUF})
 
+# Probe 支持(用于 JAX 端对拍)
+option(PROBE "Enable validation probes" OFF)
+set(PROBE_WHICH "" CACHE STRING "Comma-separated probe list: METRIC,RHS,STEP")
+
+if(PROBE)
+    message(STATUS "Probes enabled: ${PROBE_WHICH}")
+    string(REPLACE "," ";" PROBE_LIST "${PROBE_WHICH}")
+    foreach(p ${PROBE_LIST})
+        add_compile_definitions(PROBE_${p})
+    endforeach()
+    include_directories(${CMAKE_SOURCE_DIR}/validation/fortran_probes)
+endif()
+
 ADD_SUBDIRECTORY (src)

@@ -1,5 +1,9 @@
 FILE(GLOB_RECURSE SRCS ${CMAKE_CURRENT_SOURCE_DIR}/*.f90)
 
+if(PROBE)
+    list(APPEND SRCS ${CMAKE_SOURCE_DIR}/validation/fortran_probes/probe_utils.f90)
+endif()
+
 ADD_EXECUTABLE(${target_name} ${SRCS})
 
 TARGET_COMPILE_DEFINITIONS(${target_name} PRIVATE ${OMP_FLAG})
