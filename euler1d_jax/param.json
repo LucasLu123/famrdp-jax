@@ -1,0 +1,26 @@
+{
+    "grid_file": "../1d_famrdp/grid_files/Cylinder/test3.grd",
+    "top_file":  "../1d_famrdp/grid_files/Cylinder/test3.inp",
+    "ghost": 2,
+    "gamma": 1.4,
+    "limiter": "minmod",
+    "inflow": {
+        "mach":     0.1,
+        "rho":      1.0,
+        "u":        0.1,
+        "v":        0.0,
+        "w":        0.0,
+        "p":        0.7142857142857143
+    },
+    "time": {
+        "cfl":       0.5,
+        "dtau":      0.001,
+        "use_cfl":   true,
+        "n_steps":   4000,
+        "print_interval": 100
+    },
+    "output": {
+        "residual_file": "results/residual_1d_euler.csv",
+        "solution_file": "results/sol_1d_euler.npz"
+    }
+}
