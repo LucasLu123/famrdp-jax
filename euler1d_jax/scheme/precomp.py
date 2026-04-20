@@ -116,11 +116,13 @@ def _collect_faces_one_block(
     else:
         n = bi.nk; total = nk_g
 
-    # 面索引范围：i ∈ [g-1, g+n-1) 使得 i 和 i+1 都在有效范围内
-    face_start = g - 1      # 最左面（左侧为 ghost，右侧为真实或 ghost）
-    face_end   = g + n - 1  # 最右面（左侧为真实，右侧为 ghost 或真实）
+    # 面索引范围：i ∈ [g-1, g+n]，共 n+1 个面
+    # Fortran ve_via_node2 对 n 个节点计算 n+1 个面（含两侧边界面）
+    # 面 fi 位于单元 fi 和 fi+1 之间；最右面 fi=g+n-1 连接最后一个真实单元和 ghost 单元
+    face_start = g - 1  # 最左面（ghost ↔ 第一个真实单元）
+    face_end   = g + n  # 最右面之后（exclusive），含 fi=g+n-1（最后真实单元 ↔ ghost）
 
-    # 遍历所有面
+    # 遍历所有面（共 n+1 个）
     for fi in range(face_start, face_end):
         # 四点模板在当前方向的索引
         im1 = max(fi - 1, 0)          # i-1，clamp 到边界
