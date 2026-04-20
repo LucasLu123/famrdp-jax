@@ -30,7 +30,7 @@ from euler1d_jax.mesh.domain import build_domain, build_cut1to1_maps
 from euler1d_jax.mesh.metrics import build_metrics_flat
 from euler1d_jax.scheme.precomp import build_precomp
 from euler1d_jax.bc.ghost import build_bc_ops, apply_bc_all, apply_halo
-from euler1d_jax.solver.rk3 import step_euler, compute_dt_cfl
+from euler1d_jax.solver.rk3 import step_euler, compute_dt_cfl, make_step_jit
 
 
 def load_param(path: str) -> dict:
@@ -107,12 +107,24 @@ def main():
     # 2. 初始化
     # -----------------------------------------------------------------------
     prime = make_uniform_init(domain, q_inf)
-    # 施加 ghost BC 和 halo
     prime = apply_halo(prime, cut_maps)
     prime = apply_bc_all(prime, bc_ops)
 
     # -----------------------------------------------------------------------
-    # 3. 主循环
+    # 3. JIT 编译（首次调用触发，预热）
+    # -----------------------------------------------------------------------
+    print("正在 JIT 编译 step 函数（首次编译约需数秒）...", flush=True)
+    step_jit = make_step_jit(precomp, bc_ops, cut_maps, true_idx,
+                             gamma=gamma, limiter=limiter)
+    # 预热：用一个假步进触发编译，不计入计时
+    _dt0 = compute_dt_cfl(prime, vol_flat, kxyz_flat, true_idx, cfl, gamma=gamma)
+    _prime_w = step_jit(prime, _dt0)
+    jax.block_until_ready(_prime_w)
+    t_jit = time.perf_counter()
+    print(f"JIT 编译完成，耗时 {t_jit-t1:.2f}s")
+
+    # -----------------------------------------------------------------------
+    # 4. 主循环
     # -----------------------------------------------------------------------
     print(f"\n{'STEP':>6}  {'res_total':>12}  {'res_max':>12}  {'dt':>10}")
     residuals = []
@@ -127,8 +139,7 @@ def main():
         else:
             dt = dtau
 
-        prime = step_euler(prime, precomp, bc_ops, cut_maps, true_idx, dt,
-                           gamma=gamma, limiter=limiter)
+        prime = step_jit(prime, dt)
         jax.block_until_ready(prime)
 
         t_now = time.perf_counter()
@@ -142,7 +153,7 @@ def main():
             print(f"{step:6d}  {res_total:12.5e}  {res_max:12.5e}  {dt:10.4e}")
 
     # -----------------------------------------------------------------------
-    # 4. 输出
+    # 5. 输出
     # -----------------------------------------------------------------------
     avg_step = np.mean(avg_times[1:]) if len(avg_times) > 1 else avg_times[0]
     total_t  = sum(avg_times)

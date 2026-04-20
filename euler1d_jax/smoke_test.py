@@ -51,7 +51,7 @@ prime = apply_bc_all(prime, bc_ops)
 print(f"   prime: shape={prime.shape}, dtype={prime.dtype}")
 
 print("6. 计算单步 RHS...", flush=True)
-rhs = compute_euler_rhs(prime, precomp, true_idx, gamma=GAMMA)
+rhs = compute_euler_rhs(prime, precomp, gamma=GAMMA)
 print(f"   rhs: max={float(jnp.max(jnp.abs(rhs[true_idx]))):.4e}")
 assert jnp.isfinite(rhs).all(), "RHS 含 NaN/inf"
 

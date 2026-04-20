@@ -191,7 +191,7 @@ def build_cut1to1_maps(domain: DomainData):
                 f"CUT1TO1 形状不匹配: block {nb} face {face} "
                 f"dst {dst_idx.shape} vs src {src_idx.shape}"
             )
-            maps.append((dst_idx, src_idx))
+            maps.append((jnp.array(dst_idx), jnp.array(src_idx)))
 
     return maps
 

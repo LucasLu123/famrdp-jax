@@ -54,18 +54,23 @@ def build_bc_ops(domain: DomainData, q_inf: np.ndarray) -> list:
 
             if bct == BCType.WALL:
                 sign = _wall_slip_sign(face)
-                bc_ops.append(dict(type=bct, ghost_idx=ghost_idx,
-                                   src_idx=src_idx, sign=sign,
+                bc_ops.append(dict(type=bct,
+                                   ghost_idx=jnp.array(ghost_idx),
+                                   src_idx=jnp.array(src_idx),
+                                   sign=jnp.array(sign),
                                    q_inf=None, face=face))
             elif bct == BCType.SYMMETRY:
                 sign = _wall_slip_sign(face)
-                bc_ops.append(dict(type=bct, ghost_idx=ghost_idx,
-                                   src_idx=src_idx, sign=sign,
+                bc_ops.append(dict(type=bct,
+                                   ghost_idx=jnp.array(ghost_idx),
+                                   src_idx=jnp.array(src_idx),
+                                   sign=jnp.array(sign),
                                    q_inf=None, face=face))
             elif bct == BCType.FARFIELD:
-                bc_ops.append(dict(type=bct, ghost_idx=ghost_idx,
+                bc_ops.append(dict(type=bct,
+                                   ghost_idx=jnp.array(ghost_idx),
                                    src_idx=None, sign=None,
-                                   q_inf=np.array(q_inf, dtype=np.float64),
+                                   q_inf=jnp.array(q_inf, dtype=jnp.float64),
                                    face=face))
 
     return bc_ops
@@ -186,19 +191,16 @@ def apply_bc_all(prime: jnp.ndarray, bc_ops: list) -> jnp.ndarray:
     """
     for op in bc_ops:
         bct       = op['type']
-        ghost_idx = jnp.array(op['ghost_idx'])
+        ghost_idx = op['ghost_idx']   # 已为 jnp 数组
 
         if bct in (BCType.WALL, BCType.SYMMETRY):
-            src_idx = jnp.array(op['src_idx'])
-            sign    = jnp.array(op['sign'])        # (5,)
-            mirrored = prime[src_idx] * sign[None, :]  # (G*M, 5)
+            mirrored = prime[op['src_idx']] * op['sign'][None, :]
             prime = prime.at[ghost_idx].set(mirrored)
 
         elif bct == BCType.FARFIELD:
-            q_inf = jnp.array(op['q_inf'])         # (5,)
-            n     = ghost_idx.shape[0]
+            n = ghost_idx.shape[0]
             prime = prime.at[ghost_idx].set(
-                jnp.broadcast_to(q_inf[None, :], (n, 5))
+                jnp.broadcast_to(op['q_inf'][None, :], (n, 5))
             )
 
     return prime
@@ -220,8 +222,6 @@ def apply_halo(prime: jnp.ndarray, cut_maps: list) -> jnp.ndarray:
     -------
     prime 更新后的结果
     """
-    for dst_idx, src_idx in cut_maps:
-        dst = jnp.array(dst_idx)
-        src = jnp.array(src_idx)
-        prime = prime.at[dst].set(prime[src])
+    for dst_idx, src_idx in cut_maps:   # 已为 jnp 数组
+        prime = prime.at[dst_idx].set(prime[src_idx])
     return prime

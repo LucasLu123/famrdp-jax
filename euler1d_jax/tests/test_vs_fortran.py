@@ -263,7 +263,7 @@ def test_rhs_one_step(setup):
     prime = apply_halo(prime, cut_maps)
     prime = apply_bc_all(prime, bc_ops)
 
-    rhs_1d = compute_euler_rhs(prime, precomp, true_idx, gamma=GAMMA)
+    rhs_1d = compute_euler_rhs(prime, precomp, gamma=GAMMA)
 
     # 与 famrdp_jax 的 RHS 比较
     try:

@@ -16,16 +16,18 @@
     最终 rhs = -dF/dξ / J，符号已含在除以 vol 中。
 """
 from __future__ import annotations
+from functools import partial
+import jax
 import jax.numpy as jnp
 
 from euler1d_jax.scheme.muscl2 import muscl2_reconstruct_1d
 from euler1d_jax.scheme.roe import roe_flux_1d
 
 
+@partial(jax.jit, static_argnames=('gamma', 'limiter'))
 def compute_euler_rhs(
     prime: jnp.ndarray,
     precomp: dict,
-    true_idx: jnp.ndarray,
     *,
     gamma: float = 1.4,
     limiter: str = "minmod",
@@ -36,13 +38,12 @@ def compute_euler_rhs(
     ----------
     prime    : (N_total, 5) 原始变量 [rho, u, v, w, p]
     precomp  : build_precomp() 返回的预计算数据
-    true_idx : (N_true,) 真实单元全局索引（用于初始化 rhs 掩码）
-    gamma    : 比热比
-    limiter  : MUSCL-2 限制器
+    gamma    : 比热比（static）
+    limiter  : MUSCL-2 限制器（static）
 
     Returns
     -------
-    rhs : (N_total, 5)  只有 true_idx 处有非零值
+    rhs : (N_total, 5)  左右单元通量散度累加结果
     """
     N = prime.shape[0]
     rhs = jnp.zeros((N, 5), dtype=jnp.float64)

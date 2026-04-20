@@ -53,7 +53,7 @@ def step_euler(
         """RHS 算子：先施加 BC，再计算 Euler RHS。"""
         p = apply_halo(p, cut_maps)
         p = apply_bc_all(p, bc_ops)
-        return compute_euler_rhs(p, precomp, true_idx, gamma=gamma, limiter=limiter)
+        return compute_euler_rhs(p, precomp, gamma=gamma, limiter=limiter)
 
     # Stage 1
     rhs0 = L(prime)
@@ -75,6 +75,28 @@ def step_euler(
     prime_new = _clip_physical(prime_new, true_idx)
 
     return prime_new
+
+
+def make_step_jit(
+    precomp: dict,
+    bc_ops: list,
+    cut_maps: list,
+    true_idx,
+    *,
+    gamma: float = 1.4,
+    limiter: str = "minmod",
+):
+    """返回 JIT 编译的单步推进函数 step(prime, dt) -> prime_new。
+
+    所有预计算数据（precomp/bc_ops/cut_maps/true_idx）通过闭包捕获为常量，
+    JAX 编译时展开 Python 循环和分支，生成融合的 XLA 计算图。
+    首次调用时触发编译（约数秒），后续调用直接执行 XLA 代码。
+    """
+    @jax.jit
+    def _step(prime: jnp.ndarray, dt: float) -> jnp.ndarray:
+        return step_euler(prime, precomp, bc_ops, cut_maps, true_idx, dt,
+                          gamma=gamma, limiter=limiter)
+    return _step
 
 
 def _clip_physical(prime: jnp.ndarray, true_idx: jnp.ndarray) -> jnp.ndarray:
